@@ -34,7 +34,7 @@ const Auth: React.FC = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [avatarImage, setAvatarImage] = useState<File | null>(null);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(true); // loginかregister
   const [openModal, setOpenModal] = React.useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,7 +124,7 @@ const Auth: React.FC = () => {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Sign in
+              {isLogin ? "Login" : "Register"}
             </Typography>
             <Box
               component="form"
@@ -141,6 +141,10 @@ const Auth: React.FC = () => {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                value={email}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setEmail(e.target.value);
+                }}
               />
               <TextField
                 margin="normal"
@@ -151,15 +155,50 @@ const Auth: React.FC = () => {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setPassword(e.target.value);
+                }}
               />
               <Button
-                type="submit"
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
+                startIcon={<EmailIcon />}
+                onClick={
+                  isLogin
+                    ? async () => {
+                        try {
+                          await signInEmail();
+                        } catch (err: any) {
+                          alert(err.message);
+                        }
+                      }
+                    : async () => {
+                        try {
+                          await signUpEmail();
+                        } catch (err: any) {
+                          alert(err.message);
+                        }
+                      }
+                }
               >
-                Sign In
+                {isLogin ? "Login" : "Register"}
               </Button>
+              <Grid container>
+                <Grid item xs>
+                  <span className={styles.login_reset}>Forgot password</span>
+                </Grid>
+                <Grid item xs>
+                  <span
+                    onClick={() => setIsLogin(!isLogin)}
+                    className={styles.login_toggleMode}
+                  >
+                    {isLogin ? "Create new account ?" : "Back to Login"}
+                  </span>
+                </Grid>
+              </Grid>
+
               <Button
                 fullWidth
                 variant="contained"
