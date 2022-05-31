@@ -32,14 +32,18 @@ const Auth: React.FC = () => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // ユーザープロフィール
   const [username, setUsername] = useState("");
   const [avatarImage, setAvatarImage] = useState<File | null>(null);
-  const [isLogin, setIsLogin] = useState(true); // loginかregister
+  const [isLogin, setIsLogin] = useState(true);
   const [openModal, setOpenModal] = React.useState(false);
   const [resetEmail, setResetEmail] = useState("");
+
+  // プロフィールを選択した時にハンドルが出る
   const onChangeImageHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
       setAvatarImage(e.target.files![0]);
+      // 空の文字列で初期化
       e.target.value = "";
     }
   };
@@ -66,8 +70,11 @@ const Auth: React.FC = () => {
 
   const signUpEmail = async () => {
     const authUser = await auth.createUserWithEmailAndPassword(email, password);
+    // 画像データがどこにあるかのURL
     let url = "";
+    // FireStorageに格納
     if (avatarImage) {
+      // ファイル　名をランダムな文字列として作成する
       const S =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const N = 16;
@@ -75,6 +82,7 @@ const Auth: React.FC = () => {
         .map((n) => S[n % S.length])
         .join("");
       const fileName = randomChar + "_" + avatarImage.name;
+      // FireStorageに格納先とファイル名を指定して格納
       await storage.ref(`avatars/${fileName}`).put(avatarImage);
       url = await storage.ref("avatars").child(fileName).getDownloadURL();
     }
@@ -189,7 +197,7 @@ const Auth: React.FC = () => {
                 <Grid item xs>
                   <span className={styles.login_reset}>Forgot password</span>
                 </Grid>
-                <Grid item xs>
+                <Grid item>
                   <span
                     onClick={() => setIsLogin(!isLogin)}
                     className={styles.login_toggleMode}
