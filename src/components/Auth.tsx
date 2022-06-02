@@ -9,13 +9,11 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
 // import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import SendIcon from "@mui/icons-material/Send";
@@ -47,6 +45,7 @@ const Auth: React.FC = () => {
       e.target.value = "";
     }
   };
+
   const sendResetEmail = async (e: React.MouseEvent<HTMLElement>) => {
     await auth
       .sendPasswordResetEmail(resetEmail)
@@ -134,12 +133,47 @@ const Auth: React.FC = () => {
             <Typography component="h1" variant="h5">
               {isLogin ? "Login" : "Register"}
             </Typography>
-            <Box
-              component="form"
-              noValidate
-              // onSubmit={handleSubmit}
-              sx={{ mt: 1 }}
-            >
+
+            <form noValidate>
+              {!isLogin && (
+                <>
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    required
+                    fullWidth
+                    id="username"
+                    label="Username"
+                    name="username"
+                    autoComplete="username"
+                    autoFocus
+                    value={username}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setUsername(e.target.value);
+                    }}
+                  />
+                  <Box textAlign="center">
+                    <IconButton>
+                      <label>
+                        <AccountCircleIcon
+                          fontSize="large"
+                          className={
+                            avatarImage
+                              ? styles.login_addIconLoaded
+                              : styles.login_addIcon
+                          }
+                        />
+                        <input
+                          className={styles.login_hiddenIcon}
+                          type="file"
+                          onChange={onChangeImageHandler}
+                        />
+                      </label>
+                    </IconButton>
+                  </Box>
+                </>
+              )}
+
               <TextField
                 margin="normal"
                 required
@@ -169,6 +203,11 @@ const Auth: React.FC = () => {
                 }}
               />
               <Button
+                disabled={
+                  isLogin
+                    ? !email || password.length < 6 // login時
+                    : !username || !email || password.length < 6 || !avatarImage // register時
+                }
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
@@ -216,7 +255,7 @@ const Auth: React.FC = () => {
               >
                 SignIn with Google
               </Button>
-            </Box>
+            </form>
           </Box>
         </Grid>
       </Grid>
